@@ -1,14 +1,45 @@
 import wx
+#from drag_drop import *
+import wx.lib.sized_controls as sc
 from wx.lib.splitter import MultiSplitterWindow
 
-class PDF_Panel(wx.Panel):
+class MyFileDropTarget(wx.FileDropTarget):
+
+    def __init__(self, window):
+        wx.FileDropTarget.__init__(self)
+        self.window = window
+
+    def OnDropFiles(self, x, y, filenames):
+        print(filenames[0])
+        return True  
+
+class DnDPanel(sc.SizedPanel):
+
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent=parent)
+
+        file_drop_target = MyFileDropTarget(self)
+        lbl = wx.StaticText(self, label="Drag some files here:")
+        self.fileTextCtrl = wx.TextCtrl(self, style=wx.TE_MULTILINE|wx.HSCROLL|wx.TE_READONLY)
+        self.fileTextCtrl.SetDropTarget(file_drop_target)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(lbl, 0, wx.ALL, 5)
+        sizer.Add(self.fileTextCtrl, 1, wx.EXPAND|wx.ALL, 5)
+        self.SetSizer(sizer)
+
+class PDF_Panel(sc.SizedScrolledPanel):
 
 	def __init__(self, parent):
-		wx.Panel.__init__(self, parent)
+		sc.SizedScrolledPanel.__init__(self, parent)
 		self.SetBackgroundColour('#b95540')
 
-		button = wx.Button(self, id = wx.ID_ANY, label = "Add Document")
-		button.Bind(wx.EVT_BUTTON, self.onButton)
+		button1 = wx.Button(self, id = wx.ID_ANY, label = "Add Document")
+		button1.SetSizerProps(halign="center")
+		button1.Bind(wx.EVT_BUTTON, self.onButton)
+
+		drag_drop_area = DnDPanel(self)
+		drag_drop_area.SetSizerProps(halign="center")
 
 	def onButton(self, event):
 		print("Button pressed!")
@@ -20,8 +51,7 @@ class PDF_Panel(wx.Panel):
 			filename = None
 		dlg.Destroy()
 		if filename:
-			dlg = PDFdisplay(None, filename)
-			rc = dlg.ShowModal()
+			print("Hii file uploaded.")
 
 
 class randomPanel(wx.Panel):
