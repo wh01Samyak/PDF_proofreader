@@ -5,6 +5,35 @@ import extract_images
 import os
 import shutil
 
+class Panel(wx.Panel):
+    def __init__(self, parent,loc,i):
+        wx.Panel.__init__(self, parent, size=(800,100))
+        color='#A'+str(i)+'FF00'
+        # several "Panels" sized added together 
+        # are bigger than ScrolledPanel size
+
+        self.SetMinSize( (800, 100) )
+        self.SetBackgroundColour( color )
+
+        img = wx.Image(loc+str(i)+".png", wx.BITMAP_TYPE_ANY)
+        imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(img))
+        imageCtrl.SetBitmap(wx.Bitmap(img))
+
+class BigPanel(wx.Panel):
+    def __init__(self, parent, loc, cnt):
+        wx.Panel.__init__(self, parent, size=(800,800))
+
+        img = []        
+        for i in range(cnt):
+            img.append(Panel(self,loc,i))
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        for i in range(cnt):
+            sizer.Add( img[i], 1, wx.ALL | wx.EXPAND, 15 )
+        
+        self.SetSizer( sizer )
+
 class MyFileDropTarget(wx.FileDropTarget):
 
     def __init__(self, window,prePath):
@@ -29,14 +58,17 @@ class MyFileDropTarget(wx.FileDropTarget):
         else:  
                 print ("Successfully created the directory %s " % path)
         
-        extract_images.Extract(path, filenames[0])
+        extractor = extract_images.Extract(path, filenames[0])
         self.window.parent.button1.Destroy()
         self.window.parent.drag_drop_area.Destroy()	
         self.window.parent.SetBackgroundColour('#FFFFFF')
-        img = wx.Image(path+'/'+filenames[0][:-4].split('/')[-1]+"-"+str(0)+".png", wx.BITMAP_TYPE_ANY)
-        imageCtrl = wx.StaticBitmap(self.window.parent, wx.ID_ANY, wx.Bitmap(img))
-        imageCtrl.SetSizerProp(expand = True)
-        imageCtrl.SetBitmap(wx.Bitmap(img))
+        bigpanel = BigPanel(self.window.parent,path+'/'+filenames[0][:-4].split('/')[-1]+"-", extractor.cnt(filenames[0]))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add( bigpanel, 1, wx.ALL | wx.EXPAND, 15 )
+
+        self.SetSizer( sizer )
+        self.SetAutoLayout(1)
+        self.SetupScrolling()
         return True  
 
 class DnDPanel(sc.SizedPanel):
@@ -94,14 +126,18 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		else:  
 			print ("Successfully created the directory %s " % path)
         
-		extract_images.Extract(path, filename)
+		extractor = extract_images.Extract(path, filename)
 		self.button1.Destroy()
 		self.drag_drop_area.Destroy()
+		
 		self.SetBackgroundColour('#FFFFFF')
-		img = wx.Image(path+'/'+filename[:-4].split('/')[-1]+"-"+str(0)+".png", wx.BITMAP_TYPE_ANY)
-		imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(img))
-		imageCtrl.SetSizerProp(expand = True)
-		imageCtrl.SetBitmap(wx.Bitmap(img))
+		bigpanel = BigPanel(self,path+'/'+filename[:-4].split('/')[-1]+"-", extractor.cnt(filename))
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		sizer.Add( bigpanel, 1, wx.ALL | wx.EXPAND, 15 )
+
+		self.SetSizer( sizer )
+		self.SetAutoLayout(1)
+		self.SetupScrolling()
 		
 
 class randomPanel(wx.Panel):

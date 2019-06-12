@@ -23,4 +23,6 @@ class Extract():
 
 # searching fortext, making boxes = areas = page.searchFor("mupdf", hit_max = 16)
 
-
+	def cnt(self,filename):
+		doc = fitz.open(filename)
+		return doc.pageCount
