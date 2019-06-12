@@ -32,7 +32,11 @@ class MyFileDropTarget(wx.FileDropTarget):
         extract_images.Extract(path, filenames[0])
         self.window.parent.button1.Destroy()
         self.window.parent.drag_drop_area.Destroy()	
-
+        self.window.parent.SetBackgroundColour('#FFFFFF')
+        img = wx.Image(path+'/'+filenames[0][:-4].split('/')[-1]+"-"+str(0)+".png", wx.BITMAP_TYPE_ANY)
+        imageCtrl = wx.StaticBitmap(self.window.parent, wx.ID_ANY, wx.Bitmap(img))
+        imageCtrl.SetSizerProp(expand = True)
+        imageCtrl.SetBitmap(wx.Bitmap(img))
         return True  
 
 class DnDPanel(sc.SizedPanel):
@@ -56,6 +60,7 @@ class PDF_Panel(sc.SizedScrolledPanel):
 	def __init__(self, parent):
 		sc.SizedScrolledPanel.__init__(self, parent)
 		self.SetBackgroundColour('#b95540')
+		self.parent = parent
 
 		self.prePath = os.getcwd()
 
@@ -92,7 +97,12 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		extract_images.Extract(path, filename)
 		self.button1.Destroy()
 		self.drag_drop_area.Destroy()
-
+		self.SetBackgroundColour('#FFFFFF')
+		img = wx.Image(path+'/'+filename[:-4].split('/')[-1]+"-"+str(0)+".png", wx.BITMAP_TYPE_ANY)
+		imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(img))
+		imageCtrl.SetSizerProp(expand = True)
+		imageCtrl.SetBitmap(wx.Bitmap(img))
+		
 
 class randomPanel(wx.Panel):
 
@@ -197,7 +207,7 @@ class windowClass(wx.Frame):
 		compareButton.AppendSubMenu(languageItem,'Language')
 		compareButton.AppendSubMenu(advancedItem, 'Advanced')
 	
-		aboutItem = wx.MenuItem(helpButton, wx.ID_ANY, 'Adout')
+		aboutItem = wx.MenuItem(helpButton, wx.ID_ANY, 'About')
 		helpButton.Append(aboutItem)	
 
 		languageItem.Append(wx.ID_ANY,'English')	
