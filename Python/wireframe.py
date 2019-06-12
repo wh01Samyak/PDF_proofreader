@@ -1,24 +1,47 @@
 import wx
-#from drag_drop import *
 import wx.lib.sized_controls as sc
 from wx.lib.splitter import MultiSplitterWindow
+import extract_images
+import os
+import shutil
 
 class MyFileDropTarget(wx.FileDropTarget):
 
-    def __init__(self, window):
+    def __init__(self, window,prePath):
         wx.FileDropTarget.__init__(self)
         self.window = window
+        self.prePath = prePath
 
     def OnDropFiles(self, x, y, filenames):
         print(filenames[0])
+        
+        if(filenames[0][-4:] != '.pdf'):
+                print( 'Please upload pdf file.' )
+                return False
+        path = self.prePath+'/'+filenames[0][:-4].split('/')[-1]
+        try:  
+                os.mkdir(path)
+        except OSError:  
+                print ("Creation of the directory %s failed" % path)
+                shutil.rmtree(path)
+                os.mkdir(path)
+                print ("Creation of the directory %s successful. Directory removed and recreated." % path)
+        else:  
+                print ("Successfully created the directory %s " % path)
+        
+        extract_images.Extract(path, filenames[0])
+        self.window.parent.button1.Destroy()
+        self.window.parent.drag_drop_area.Destroy()	
+
         return True  
 
 class DnDPanel(sc.SizedPanel):
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
+        self.parent = parent
 
-        file_drop_target = MyFileDropTarget(self)
+        file_drop_target = MyFileDropTarget(self, parent.prePath)
         lbl = wx.StaticText(self, label="Drag some files here:")
         self.fileTextCtrl = wx.TextCtrl(self, style=wx.TE_MULTILINE|wx.HSCROLL|wx.TE_READONLY)
         self.fileTextCtrl.SetDropTarget(file_drop_target)
@@ -34,12 +57,15 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		sc.SizedScrolledPanel.__init__(self, parent)
 		self.SetBackgroundColour('#b95540')
 
-		button1 = wx.Button(self, id = wx.ID_ANY, label = "Add Document")
-		button1.SetSizerProps(halign="center")
-		button1.Bind(wx.EVT_BUTTON, self.onButton)
+		self.prePath = os.getcwd()
 
-		drag_drop_area = DnDPanel(self)
-		drag_drop_area.SetSizerProps(halign="center")
+		self.button1 = wx.Button(self, id = wx.ID_ANY, label = "Add Document")
+		self.button1.SetSizerProps(halign="center")
+		self.button1.Bind(wx.EVT_BUTTON, self.onButton)
+
+		self.drag_drop_area = DnDPanel(self)
+		self.drag_drop_area.SetSizerProps(halign="center")
+
 
 	def onButton(self, event):
 		print("Button pressed!")
@@ -52,6 +78,20 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		dlg.Destroy()
 		if filename:
 			print("Hii file uploaded.")
+		path = self.prePath+'/'+filename[:-4].split('/')[-1]
+		try:  
+			os.mkdir(path)
+		except OSError:  
+			print ("Creation of the directory %s failed" % path)
+			shutil.rmtree(path)
+			os.mkdir(path)
+			print ("Creation of the directory %s successful. Directory removed and recreated." % path)
+		else:  
+			print ("Successfully created the directory %s " % path)
+        
+		extract_images.Extract(path, filename)
+		self.button1.Destroy()
+		self.drag_drop_area.Destroy()
 
 
 class randomPanel(wx.Panel):
