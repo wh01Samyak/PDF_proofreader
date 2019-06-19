@@ -5,14 +5,8 @@ import extract_images_wi
 import shutil
 import ocr
 
+upload = False
 p = ''
-upload = True
-
-def returnPath():
-	return p
-
-def upload():
-	return upload
 
 class Panel(wx.Panel):
     def __init__(self, parent,loc,i):
@@ -30,7 +24,8 @@ class Panel(wx.Panel):
 
 class BigPanel(wx.Panel):
     def __init__(self, parent, loc, cnt):
-        upload = False
+        global upload 
+        upload = True
         wx.Panel.__init__(self, parent, size=(800,800))
 
         img = []        
@@ -52,12 +47,14 @@ class MyFileDropTarget(wx.FileDropTarget):
         self.prePath = prePath
 
     def OnDropFiles(self, x, y, filenames):
+        global p
         print(filenames[0])
         
         if(filenames[0][-4:] != '.pdf'):
                 print( 'Please upload pdf file.' )
                 return False
         path = self.prePath+'/'+filenames[0][:-4].split('/')[-1]
+        p = path
         try:  
                 os.mkdir(path)
         except OSError:  
@@ -103,7 +100,7 @@ class DnDPanel(sc.SizedPanel):
         sizer.Add(self.fileTextCtrl, 1, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
 
-class selectable_PDF_Panel(sc.SizedScrolledPanel):
+class PDF_Panel(sc.SizedScrolledPanel):
 
 	def __init__(self, parent):
 		sc.SizedScrolledPanel.__init__(self, parent)
@@ -121,6 +118,7 @@ class selectable_PDF_Panel(sc.SizedScrolledPanel):
 
 
 	def onButton(self, event):
+		global p
 		print("Button pressed!")
 		wild = "*.pdf;*.xps;*.oxps;*.epub;*.cbz;*.fb2"
 		dlg = wx.FileDialog(None, message = "Choose a file to display", wildcard = wild, style=wx.FD_OPEN|wx.FD_CHANGE_DIR)

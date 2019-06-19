@@ -1,9 +1,22 @@
 import wx
 from wx.lib.splitter import MultiSplitterWindow
-from selectable_pdf_panel import *
-from imageform_pdf_panel import * 
+import selectable_pdf_panel
+import imageform_pdf_panel 
 import text_compare
 
+def selectableUpload():
+	return selectable_pdf_panel.upload
+
+def imageformUpload():
+	return imageform_pdf_panel.upload
+
+def selectablePath():
+	print(selectable_pdf_panel.p)
+	return selectable_pdf_panel.p
+
+def imageformPath():
+	print(imageform_pdf_panel.p)
+	return imageform_pdf_panel.p
 
 class randomPanel(wx.Panel):
 
@@ -25,8 +38,8 @@ class mainPanel(wx.Panel):
 		vSplitter.SplitVertically(vSplitter1, errorLogPanel)
 		vSplitter.SetSashGravity(0.85)
 
-		panelOne = selectable_PDF_Panel(vSplitter1)
-		panelTwo = imageform_PDF_Panel(vSplitter1)
+		panelOne = imageform_pdf_panel.PDF_Panel(vSplitter1)
+		panelTwo = selectable_pdf_panel.PDF_Panel(vSplitter1)
 		vSplitter1.SplitVertically(panelOne, panelTwo)
 		vSplitter1.SetSashGravity(0.5)
 
@@ -91,8 +104,8 @@ class menuBr():
 		previousPageItem = wx.MenuItem(viewButton, wx.ID_ANY, 'Previous Page')
 		viewButton.Append(previousPageItem)
 
-		compareDocumentItem = wx.MenuItem(compareButton, wx.ID_ANY, 'Compare Documents')
-		compareButton.Append(compareDocumentItem)
+		self.compareDocumentItem = wx.MenuItem(compareButton, wx.ID_ANY, 'Compare Documents')
+		compareButton.Append(self.compareDocumentItem)
 		nextDifferenceItem = wx.MenuItem(compareButton, wx.ID_ANY, 'Next Difference')
 		compareButton.Append(nextDifferenceItem)
 		previousDifferenceItem = wx.MenuItem(compareButton, wx.ID_ANY, 'Previous Difference')

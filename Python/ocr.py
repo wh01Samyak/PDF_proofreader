@@ -25,5 +25,4 @@ def tesseract_text(path, preprocess = "thresh"):
 	# load the image as a PIL/Pillow image, apply OCR, and then delete the temporary file
 	text = pytesseract.image_to_string(Image.open(filename))
 	os.remove(filename)
-	print(text)
 	return text
