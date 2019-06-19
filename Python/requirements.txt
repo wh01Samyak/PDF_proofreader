@@ -5,6 +5,7 @@ Click==7.0
 configobj==5.0.6
 configparser==3.7.4
 decorator==4.4.0
+diff-match-patch==20181111
 fitz==0.0.1.dev2
 funcsigs==1.0.2
 future==0.17.1
@@ -17,6 +18,7 @@ neurdflib==5.0.0.post1
 nibabel==2.4.1
 nipype==1.2.0
 numpy==1.16.4
+opencv-python==4.1.0.25
 packaging==19.0
 pandas==0.24.2
 pathlib2==2.3.3
@@ -26,9 +28,6 @@ pydot==1.4.1
 pydotplus==2.0.2
 PyMuPDF==1.14.16
 pyparsing==2.4.0
-PyQt5==5.12.2
-PyQt5-sip==4.19.17
-PyQtWebEngine==5.12.1
 pytesseract==0.2.6
 python-dateutil==2.8.0
 python-pdfbox==0.1.4
@@ -43,4 +42,5 @@ sip==4.19.8
 six==1.12.0
 traits==5.1.1
 urllib3==1.25.3
+Wand==0.5.4
 wxPython==4.0.6

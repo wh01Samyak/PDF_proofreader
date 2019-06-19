@@ -1,8 +1,6 @@
 import wx
 from gui import *
 
-		
-
 class windowClass(wx.Frame):
 
 	def __init__(self, *args, **kwargs):

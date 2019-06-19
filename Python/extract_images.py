@@ -8,21 +8,16 @@ class Extract():
 	def openthefile(self,path, filename):
 		doc = fitz.open(filename)
 		filename = filename[:-4]
-		pagent = doc.pageCount
-		for i in range(pagent):
+		self.pagecnt = doc.pageCount
+		self.text = ''
+		for i in range(self.pagecnt):
 			page = doc.loadPage(i)
-			#page = doc[n]
 			pix = page.getPixmap()
-			pix1 = page.getSVGimage()
 			pix.writePNG(path+'/'+filename.split('/')[-1]+"-"+str(i)+".png")
-			#pix.writePNG(filename+"-{i}.png")
+			self.text = self.text + page.getText("text") +'\n'
 
-# in wxPython bitmap = wx.Bitmap.FromBufferRGBA(pix.width, pix.height, pix.samples)
+	def cnt(self):
+		return self.pagecnt
 
-			#text = page.getText("text")
-
-# searching fortext, making boxes = areas = page.searchFor("mupdf", hit_max = 16)
-
-	def cnt(self,filename):
-		doc = fitz.open(filename)
-		return doc.pageCount
+	def getText(self):
+		return self.text
