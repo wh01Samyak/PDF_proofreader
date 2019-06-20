@@ -9,33 +9,40 @@ upload = False
 p = ''
 
 class Panel(wx.Panel):
-    def __init__(self, parent,loc,i):
-        wx.Panel.__init__(self, parent, size=(800,100))
+    def __init__(self, parent,loc,i,cnt):
+        wx.Panel.__init__(self, parent, size=(620,810*cnt))
         color='#A'+str(i)+'FF00'
         # several "Panels" sized added together 
         # are bigger than ScrolledPanel size
 
-        self.SetMinSize( (800, 100) )
+        self.SetMinSize( (600, 800) )
         self.SetBackgroundColour( color )
 
         img = wx.Image(loc+str(i)+".jpg", wx.BITMAP_TYPE_ANY)
-        imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(img))
-        imageCtrl.SetBitmap(wx.Bitmap(img))
+        bitmap = self.scale_bitmap(wx.Bitmap(img), 500, 800)
+        imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
+        imageCtrl.SetBitmap(bitmap)
+
+    def scale_bitmap(self, bitmap, width, height):
+        image = bitmap.ConvertToImage()
+        image = image.Scale(width, height, wx.IMAGE_QUALITY_HIGH)
+        result = wx.Bitmap(image)
+        return result
 
 class BigPanel(wx.Panel):
     def __init__(self, parent, loc, cnt):
         global upload 
         upload = True
-        wx.Panel.__init__(self, parent, size=(800,800))
+        wx.Panel.__init__(self, parent, size=(620,810*cnt))
 
         img = []        
         for i in range(cnt):
-            img.append(Panel(self,loc,i))
+            img.append(Panel(self,loc,i,cnt))
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         for i in range(cnt):
-            sizer.Add( img[i], 1, wx.ALL | wx.EXPAND, 15 )
+            sizer.Add( img[i], 1, wx.ALL | wx.EXPAND, 2 )
         
         self.SetSizer( sizer )
 
