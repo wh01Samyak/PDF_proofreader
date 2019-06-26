@@ -47,7 +47,7 @@ class windowClass(wx.Frame):
 					f.write(str(j)+'\n')
 				f.write('\n')					
 			f.close()
-			self.panel.changes(ipath+'/'+ipath.split('/')[-1]+'-0.jpg',0,['Operating','System'],
+			self.panel.changes(ipath+'/'+ipath.split('/')[-1]+'-0.jpg',0,['Mr.','Samyak'],
 						epath+'/'+epath.split('/')[-1]+'-0.png',0,['','']) 	
 			print("Img - "+ipath+'/'+ipath.split('/')[-1]+'-0.jpg')	
 			print("Edit - "+epath+'/'+epath.split('/')[-1]+'-0.png')
