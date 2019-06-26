@@ -3,6 +3,12 @@ from wx.lib.splitter import MultiSplitterWindow
 import selectable_pdf_panel
 import imageform_pdf_panel 
 import text_compare
+import highlight as ht
+import os
+
+PATH = os.getcwd()
+
+print("gui path is - "+PATH)
 
 def selectableUpload():
 	return selectable_pdf_panel.upload
@@ -38,17 +44,22 @@ class mainPanel(wx.Panel):
 		vSplitter.SplitVertically(vSplitter1, errorLogPanel)
 		vSplitter.SetSashGravity(0.85)
 
-		panelOne = imageform_pdf_panel.PDF_Panel(vSplitter1)
-		panelTwo = selectable_pdf_panel.PDF_Panel(vSplitter1)
-		vSplitter1.SplitVertically(panelOne, panelTwo)
+		self.panelOne = imageform_pdf_panel.PDF_Panel(vSplitter1)
+		self.panelTwo = selectable_pdf_panel.PDF_Panel(vSplitter1)
+		vSplitter1.SplitVertically(self.panelOne, self.panelTwo)
 		vSplitter1.SetSashGravity(0.5)
 
 		downPanel = randomPanel(topSplitter, "#40b96c")
 		topSplitter.SplitHorizontally(vSplitter, downPanel)
-		topSplitter.SetSashGravity(0.85)
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		sizer.Add(topSplitter, 1, wx.EXPAND)
 		self.SetSizer(sizer)
+		topSplitter.SetSashGravity(0.85)
+		
+	def changes(self, imgFilename, imgI, imageChanges, editFilename, editI, editableChanges):
+		if(editableChanges[1] == ''):
+			imgImg = ht.highlight(imgFilename, imageChanges[1], imageChanges[0], PATH)
+			self.panelOne.changeImg(imgI,PATH)
 
 class menuBr():
 	

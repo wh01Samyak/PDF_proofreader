@@ -1,6 +1,9 @@
 import wx
+import os
 from gui import *
 import text_compare
+
+PATH = os.getcwd()
 
 class windowClass(wx.Frame):
 
@@ -11,7 +14,7 @@ class windowClass(wx.Frame):
 
 	def basicGUI(self):
 
-		panel = mainPanel(self)
+		self.panel = mainPanel(self)
 
 		menuBar = menuBr()
 		menuBarDef = menuBar.define()
@@ -29,17 +32,26 @@ class windowClass(wx.Frame):
 	
 	def Compare(self,e):
 		if( selectableUpload() and imageformUpload() ):
-			path = imageformPath()
-			f1 = open(path+"/image-form.txt","r")
+			ipath = imageformPath()
+			f1 = open(ipath+"/image-form.txt","r")
 			text1 = f1.read()	
 			f1.close()
-			path = selectablePath()
-			f2 = open(path+"/selectable.txt","r")
+			epath = selectablePath()
+			f2 = open(epath+"/selectable.txt","r")
 			text2 = f2.read()	
 			f2.close()
 			errorLog = text_compare.diff(text1,text2)
-			print(errorLog)
-
+			f= open(PATH+"/errorLog.txt","w+")
+			for i in errorLog:
+				for j in i:
+					f.write(str(j)+'\n')
+				f.write('\n')					
+			f.close()
+			self.panel.changes(ipath+'/'+ipath.split('/')[-1]+'-0.jpg',0,['Operating','System'],
+						epath+'/'+epath.split('/')[-1]+'-0.png',0,['','']) 	
+			print("Img - "+ipath+'/'+ipath.split('/')[-1]+'-0.jpg')	
+			print("Edit - "+epath+'/'+epath.split('/')[-1]+'-0.png')
+			
 		elif(selectableUpload()):
 			wx.MessageBox('Image-form PDF not uploaded.', 'Error', wx.OK | wx.ICON_ERROR)
 

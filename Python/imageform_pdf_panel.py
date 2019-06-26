@@ -7,21 +7,17 @@ import ocr
 
 upload = False
 p = ''
+PATH = ''
 
 class Panel(wx.Panel):
-    def __init__(self, parent,loc,i,cnt):
+    def __init__(self, parent,cnt, loc='',i=''):
         wx.Panel.__init__(self, parent, size=(620,810*cnt))
-        color='#A'+str(i)+'FF00'
-        # several "Panels" sized added together 
-        # are bigger than ScrolledPanel size
 
         self.SetMinSize( (600, 800) )
-        self.SetBackgroundColour( color )
-
         img = wx.Image(loc+str(i)+".jpg", wx.BITMAP_TYPE_ANY)
-        bitmap = self.scale_bitmap(wx.Bitmap(img), 500, 800)
-        imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, bitmap)
-        imageCtrl.SetBitmap(bitmap)
+        self.bitmap = self.scale_bitmap(wx.Bitmap(img), 500, 800)
+        self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap)
+        self.imageCtrl.SetBitmap(self.bitmap)
 
     def scale_bitmap(self, bitmap, width, height):
         image = bitmap.ConvertToImage()
@@ -29,23 +25,33 @@ class Panel(wx.Panel):
         result = wx.Bitmap(image)
         return result
 
+    def change(self, path):
+        img = wx.Image(path+"/img.jpg", wx.BITMAP_TYPE_ANY)
+        self.bitmap = self.scale_bitmap(wx.Bitmap(img), 500, 800)
+        self.imageCtrl.SetBitmap(self.bitmap)
+
 class BigPanel(wx.Panel):
+
     def __init__(self, parent, loc, cnt):
         global upload 
         upload = True
         wx.Panel.__init__(self, parent, size=(620,810*cnt))
 
-        img = []        
+        self.cnt = cnt
+        self.img = []        
         for i in range(cnt):
-            img.append(Panel(self,loc,i,cnt))
+            self.img.append(Panel(self,cnt,loc,i))
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         for i in range(cnt):
-            sizer.Add( img[i], 1, wx.ALL | wx.EXPAND, 2 )
+            self.sizer.Add( self.img[i], 1, wx.ALL | wx.EXPAND, 2 )
         
-        self.SetSizer( sizer )
+        self.SetSizer( self.sizer )
 
+    def changePanel(self, i, path):
+        self.img[i].change(path)	
+        
 class MyFileDropTarget(wx.FileDropTarget):
 
     def __init__(self, window,prePath):
@@ -55,6 +61,8 @@ class MyFileDropTarget(wx.FileDropTarget):
 
     def OnDropFiles(self, x, y, filenames):
         global p
+        global PATH
+        PATH = prePath
         print(filenames[0])
         
         if(filenames[0][-4:] != '.pdf'):
@@ -76,7 +84,7 @@ class MyFileDropTarget(wx.FileDropTarget):
         self.window.parent.button1.Destroy()
         self.window.parent.drag_drop_area.Destroy()	
         self.window.parent.SetBackgroundColour('#FFFFFF')
-        bigpanel = BigPanel(self.window.parent,path+'/'+filenames[0][:-4].split('/')[-1]+"-", extractor.cnt()) 
+        self.bigpanel = BigPanel(self.window.parent,path+'/'+filenames[0][:-4].split('/')[-1]+"-", extractor.cnt()) 
         text = '' 
         for i in range(extractor.cnt()):
                 text = text + ocr.tesseract_text(path+'/'+filenames[0][:-4].split('/')[-1]+"-"+str(i)+".jpg", "thresh") + '\n'
@@ -89,7 +97,10 @@ class MyFileDropTarget(wx.FileDropTarget):
         self.SetSizer( sizer )
         self.SetAutoLayout(1)
         self.SetupScrolling()
-        return True  
+        return True 
+ 
+    def changeImg(self, i, img):
+        self.bigpanel.changePanel(i, img)
 
 class DnDPanel(sc.SizedPanel):
 
@@ -153,7 +164,7 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		self.drag_drop_area.Destroy()
 		
 		self.SetBackgroundColour('#FFFFFF')
-		bigpanel = BigPanel(self,path+'/'+filename[:-4].split('/')[-1]+"-", extractor.cnt())
+		self.bigpanel = BigPanel(self,path+'/'+filename[:-4].split('/')[-1]+"-", extractor.cnt())
 		text = '' 
 		for i in range(extractor.cnt()):
 			text = text + ocr.tesseract_text(path+'/'+filename[:-4].split('/')[-1]+"-"+str(i)+".jpg", "thresh") + '\n'
@@ -161,8 +172,11 @@ class PDF_Panel(sc.SizedScrolledPanel):
 		f.write(text)	
 		f.close() 		
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		sizer.Add( bigpanel, 1, wx.ALL | wx.EXPAND, 15 )
+		sizer.Add( self.bigpanel, 1, wx.ALL | wx.EXPAND, 15 )
 
 		self.SetSizer( sizer )
 		self.SetAutoLayout(1)
 		self.SetupScrolling()
+
+	def changeImg(self, i, path):		
+		self.bigpanel.changePanel(i, path)

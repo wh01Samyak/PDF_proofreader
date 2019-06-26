@@ -10,13 +10,11 @@ p = ''
 class Panel(wx.Panel):
     def __init__(self, parent,loc,i,cnt):
         wx.Panel.__init__(self, parent, size=(620,880*cnt))
-        color='#A0FF00'
         # several "Panels" sized added together 
         # are bigger than ScrolledPanel size
 
         self.SetMinSize( (600, 870) )
-        self.SetBackgroundColour( color )
-
+        
         img = wx.Image(loc+str(i)+".png", wx.BITMAP_TYPE_ANY)
         imageCtrl = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(img))
         imageCtrl.SetBitmap(wx.Bitmap(img))
